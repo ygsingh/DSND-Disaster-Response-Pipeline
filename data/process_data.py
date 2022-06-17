@@ -53,6 +53,9 @@ def clean_data(df):
 
     # concatenate the original dataframe with the new `categories` dataframe
     df = pd.concat([df,categories],axis=1)
+    
+    # handling multivalues in related class
+    df['related']=df['related'].map(lambda x: 1 if x == 2 else x)
 
     # drop duplicates
     df.drop_duplicates(keep='first',inplace=True)
