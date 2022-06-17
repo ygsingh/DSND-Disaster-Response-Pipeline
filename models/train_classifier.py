@@ -19,6 +19,7 @@ nltk.download('wordnet')
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
 
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -93,11 +94,21 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(
-            n_estimators=10,
-        min_samples_split=2)))
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
-    return pipeline
+    
+    # Setting up the grip: Small space because it takes ages to run this and the resuting output
+    # classifier is 900MB, cann't upload it to GutHub.
+    parameters = {
+        'clf__estimator__n_estimators': [10],
+        'clf__estimator__min_samples_split': [2],
+    
+    }
+    
+    # Gridsearch to find optimal model 
+    model = GridSearchCV(pipeline, param_grid=parameters, cv=2)
+
+    return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
